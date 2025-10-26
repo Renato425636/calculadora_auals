@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Aulas</title>
+    <!-- Usando a fonte Inter para uma aparência mais moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #007bff;
+            --color-primary-dark: #0056b3;
+            --color-secondary: #6c757d;
+            --color-success: #28a745;
+            --color-danger: #dc3545;
+            --color-light: #f8f9fa;
+            --color-dark: #343a40;
+            --color-border: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--color-light);
+            color: var(--color-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1, h2, h3 {
+            color: var(--color-dark);
+            margin-top: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        h2 {
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* Layout responsivo para telas maiores */
+        @media (min-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 300px 1fr;
+            }
+        }
+
+        .form-section, .schedule-section {
+            padding: 1.5rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            background-color: #fff;
+        }
+
+        .schedule-section {
+            background-color: #fdfdfd;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            box-sizing: border-box; /* Garante que o padding não afete a largura */
+            font-size: 1rem;
+        }
+
+        .form-group input[type="number"] {
+            /* Remove setas do input number */
+            -moz-appearance: textfield;
+        }
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger, .btn-edit {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            flex-grow: 0;
+        }
+        
+        .btn-danger {
+            background-color: var(--color-danger);
+            color: white;
+        }
+        .btn-danger:hover { background-color: #c82333; }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: var(--color-dark);
+        }
+        .btn-edit:hover { background-color: #e0a800; }
+
+        #student-list {
+            margin-top: 1.5rem;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--color-border);
+            transition: background-color 0.2s;
+        }
+        .student-item:last-child {
+            border-bottom: none;
+        }
+        .student-item:hover {
+            background-color: var(--color-light);
+        }
+        
+        /* Filtros */
+        .filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filters > .form-group {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        
+        @media (min-width: 850px) {
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+
+        #total-display {
+            background-color: #e6f7ff;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary-dark);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        #total-display h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        #total-display #total-amount {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* --- Novo Estilo do Calendário --- */
+        #class-days-list {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            border-top: 1px solid var(--color-border);
+            padding-top: 1rem;
+        }
+        
+        .calendar-header {
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            padding-bottom: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1 / 1; /* Mantém os dias quadrados */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .calendar-day:hover:not(.padding) {
+            background-color: #e9ecef;
+        }
+
+        .calendar-day.padding {
+            background-color: var(--color-light);
+            cursor: default;
+            color: #ced4da;
+        }
+        
+        .calendar-day.weekend:not(.padding) {
+            color: var(--color-secondary);
+        }
+
+        .calendar-day.selected {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary-dark);
+        }
+        /* --- Fim do Estilo do Calendário --- */
+
+        .empty-state {
+            text-align: center;
+            color: var(--color-secondary);
+            padding: 1rem;
+            /* Novo: Ocupa a grade inteira do calendário */
+            grid-column: 1 / -1; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -4px; margin-right: 8px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>Gestor de Aulas</h1>
+
+        <div class="grid-layout">
+            
+            <!-- Seção de Gerenciamento de Alunos -->
+            <div class="form-section">
+                <h2>Gerenciar Alunos</h2>
+                <form id="student-form">
+                    <input type="hidden" id="student-id">
+                    <div class="form-group">
+                        <label for="student-name">Nome do Aluno</label>
+                        <input type="text" id="student-name" placeholder="Ex: João Silva" required>
+                    </div>
+                    <!-- Correção: class.form-group" para "class="form-group" -->
+                    <div class="form-group"> 
+                        <label for="student-default-price">Valor Padrão (R$)</label>
+                        <input type="number" id="student-default-price" placeholder="Ex: 70.00" min="0" step="0.01" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">Salvar Aluno</button>
+                        <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;">Cancelar Edição</button>
+                    </div>
+                </form>
+
+                <div id="student-list">
+                    <!-- Lista de alunos será populada pelo JS -->
+                </div>
+            </div>
+
+            <!-- Seção de Rastreamento de Aulas -->
+            <div class="schedule-section">
+                <h2>Rastreamento de Aulas</h2>
+
+                <div class="filters">
+                    <div class="form-group">
+                        <label for="month-select">Mês</label>
+                        <select id="month-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-filter-select">Aluno</label>
+                        <select id="student-filter-select">
+                            <option value="">Todos os Alunos</option>
+                            <!-- Populado pelo JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="total-display">
+                    <h3 id="total-label">Total a Receber</h3>
+                    <span id="total-amount">R$ 0,00</span>
+                </div>
+
+                <div id="class-days-list">
+                    <!-- Calendário será populado pelo JS -->
+                    <p class="empty-state">Selecione um mês e um aluno para lançar as aulas.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Seletores do DOM ---
+            const studentForm = document.getElementById('student-form');
+            const studentIdInput = document.getElementById('student-id');
+            const studentNameInput = document.getElementById('student-name');
+            const studentDefaultPriceInput = document.getElementById('student-default-price');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const studentList = document.getElementById('student-list');
+            
+            const monthSelect = document.getElementById('month-select');
+            const studentFilterSelect = document.getElementById('student-filter-select');
+            const totalLabel = document.getElementById('total-label');
+            const totalAmountEl = document.getElementById('total-amount');
+            const classDaysList = document.getElementById('class-days-list');
+
+            // --- Constantes e Estado ---
+            const WEEKDAYS = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+            // Novo: Dias curtos para o cabeçalho do calendário
+            const WEEKDAYS_SHORT = ["D", "S", "T", "Q", "Q", "S", "S"]; 
+            const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            
+            let students = [];
+            let schedules = []; // Estrutura mantida: { id, studentId, date(YYYY-MM-DD), price, status }
+
+            // --- Funções Auxiliares ---
+            const generateId = () => `id_${new Date().getTime()}_${Math.random().toString(36).substring(2, 9)}`;
+
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+            };
+            
+            const formatISODate = (isoDate) => {
+                 const [year, month, day] = isoDate.split('-');
+                 return `${day}/${month}/${year}`;
+            }
+
+            const getDaysInMonth = (month, year) => {
+                return new Date(year, month + 1, 0).getDate();
+            };
+            
+            // --- Funções de Persistência (LocalStorage) ---
+
+            const loadFromLocalStorage = () => {
+                students = JSON.parse(localStorage.getItem('tutorStudents')) || [];
+                schedules = JSON.parse(localStorage.getItem('tutorSchedules')) || []; 
+            };
+
+            const saveStudents = () => {
+                localStorage.setItem('tutorStudents', JSON.stringify(students));
+            };
+
+            const saveSchedules = () => {
+                localStorage.setItem('tutorSchedules', JSON.stringify(schedules)); 
+            };
+
+            // --- Funções de Gerenciamento de Alunos (CRUD) ---
+
+            const renderStudentList = () => {
+                studentList.innerHTML = ''; 
+                
+                if (students.length === 0) {
+                    studentList.innerHTML = '<p class="empty-state">Nenhum aluno cadastrado.</p>';
+                    return;
+                }
+                
+                const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
+                
+                sortedStudents.forEach(student => {
+                    const item = document.createElement('div');
+                    item.className = 'student-item';
+                    item.innerHTML = `
+                        <span>
+                            <strong>${student.name}</strong><br>
+                            <small>Padrão: ${formatCurrency(student.price)}</small>
+                        </span>
+                        <div>
+                            <button class="btn btn-edit" data-id="${student.id}">Editar</button>
+                            <button class="btn btn-danger" data-id="${student.id}">Excluir</button>
+                        </div>
+                    `;
+                    studentList.appendChild(item);
+                });
+            };
+
+            const resetStudentForm = () => {
+                studentForm.reset();
+                studentIdInput.value = '';
+                cancelEditBtn.style.display = 'none';
+                studentForm.querySelector('button[type="submit"]').textContent = 'Salvar Aluno';
+            };
+
+            const handleStudentFormSubmit = (e) => {
+                e.preventDefault();
+                
+                const id = studentIdInput.value;
+                const name = studentNameInput.value.trim();
+                const price = parseFloat(studentDefaultPriceInput.value); 
+
+                if (!name || isNaN(price) || price < 0) { 
+                    console.error("Dados inválidos");
+                    return;
+                }
+
+                if (id) {
+                    const index = students.findIndex(s => s.id === id);
+                    if (index !== -1) {
+                        students[index] = { id, name, price }; 
+                    }
+                } else {
+                    const newStudent = { id: generateId(), name, price }; 
+                    students.push(newStudent);
+                }
+
+                saveStudents();
+                renderStudentList();
+                renderStudentFilterDropdown();
+                renderMonthCalendar(); // Atualiza o calendário
+                resetStudentForm();
+            };
+
+            const handleStudentListClick = (e) => {
+                const target = e.target;
+                const id = target.dataset.id;
+                if (!id) return;
+
+                if (target.classList.contains('btn-edit')) {
+                    const student = students.find(s => s.id === id);
+                    if (student) {
+                        studentIdInput.value = student.id;
+                        studentNameInput.value = student.name;
+                        studentDefaultPriceInput.value = student.price; 
+                        
+                        cancelEditBtn.style.display = 'inline-block';
+                        studentForm.querySelector('button[type="submit"]').textContent = 'Atualizar Aluno';
+                        studentNameInput.focus();
+                    }
+                } else if (target.classList.contains('btn-danger')) {
+                    // Excluir
+                    students = students.filter(s => s.id !== id);
+                    schedules = schedules.filter(s => s.studentId !== id); 
+                    
+                    saveStudents();
+                    saveSchedules();
+                    renderStudentList();
+                    renderStudentFilterDropdown(); 
+                    renderMonthCalendar(); // Atualiza o calendário
+                }
+            };
+
+            // --- Funções de Rastreamento de Aulas (Calendário) ---
+
+            const renderStudentFilterDropdown = () => {
+                const sortedStudents = [...students].sort((a, b) => a.name.localeCompare(b.name));
+                const currentSelection = studentFilterSelect.value;
+                studentFilterSelect.innerHTML = '<option value="">Todos os Alunos</option>';
+                
+                sortedStudents.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.textContent = student.name;
+                    studentFilterSelect.appendChild(option);
+                });
+                
+                studentFilterSelect.value = currentSelection;
+            };
+
+            const populateFilters = () => {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                
+                monthSelect.innerHTML = '';
+                MONTHS.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = month;
+                    if (index === currentMonth) {
+                        option.selected = true;
+                    }
+                    monthSelect.appendChild(option);
+                });
+
+                studentFilterSelect.value = ""; // Padrão é "Todos os Alunos"
+            };
+            
+            // **FUNÇÃO PRINCIPAL ATUALIZADA**
+            // Renderiza o calendário de dias do mês
+            const renderMonthCalendar = () => {
+                classDaysList.innerHTML = ''; // Limpa
+                
+                const selectedMonth = parseInt(monthSelect.value); // 0-11
+                const selectedStudentId = studentFilterSelect.value; // Pode ser "" (Todos)
+                const currentYear = new Date().getFullYear();
+
+                // 1. Renderiza o cabeçalho (D, S, T, Q, Q, S, S)
+                WEEKDAYS_SHORT.forEach(day => {
+                    const headerCell = document.createElement('div');
+                    headerCell.className = 'calendar-header';
+                    headerCell.textContent = day;
+                    classDaysList.appendChild(headerCell);
+                });
+
+                // 2. Se "Todos" estiver selecionado, mostra estado vazio e calcula total
+                if (selectedStudentId === "") {
+                    const emptyState = document.createElement('p');
+                    emptyState.className = 'empty-state';
+                    emptyState.textContent = 'Selecione um aluno para lançar as aulas.';
+                    classDaysList.appendChild(emptyState);
+                    calculateTotal(); // Calcula o total (geral)
+                    return;
+                }
+                
+                const student = students.find(s => s.id === selectedStudentId);
+                if (!student) {
+                    const errorState = document.createElement('p');
+                    errorState.className = 'empty-state';
+                    errorState.textContent = 'Erro: Aluno não encontrado.';
+                    classDaysList.appendChild(errorState);
+                    return;
+                }
+
+                // 3. Lógica do Calendário
+                const daysInMonth = getDaysInMonth(selectedMonth, currentYear);
+                const firstDayOfWeek = new Date(currentYear, selectedMonth, 1).getDay(); // 0=Domingo, 1=Segunda...
+
+                // 4. Renderiza dias de preenchimento (padding)
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    const paddingCell = document.createElement('div');
+                    paddingCell.className = 'calendar-day padding';
+                    classDaysList.appendChild(paddingCell);
+                }
+
+                // 5. Renderiza os dias reais do mês
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateObj = new Date(currentYear, selectedMonth, day);
+                    const dateISO = `${currentYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    
+                    const dayOfWeek = dateObj.getDay();
+                    
+                    // Verifica se já existe uma aula marcada
+                    const existingSchedule = schedules.find(s => s.studentId === selectedStudentId && s.date === dateISO && s.status === 'completed');
+                    const isSelected = !!existingSchedule;
+                    
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'calendar-day';
+                    dayCell.textContent = day;
+                    dayCell.dataset.date = dateISO; // Armazena a data no formato YYYY-MM-DD
+                    
+                    if (isSelected) {
+                        dayCell.classList.add('selected');
+                    }
+                    if (isWeekend) {
+                        dayCell.classList.add('weekend');
+                    }
+                    
+                    classDaysList.appendChild(dayCell);
+                }
+                
+                calculateTotal(); // Atualiza o total (individual) após renderizar
+            };
+            
+            // **FUNÇÃO ATUALIZADA**
+            // Manipulador de clique nos dias do calendário
+            const handleDayClick = (e) => {
+                const target = e.target;
+                
+                // Verifica se é um dia clicável (ignora cabeçalho, padding, ou o container)
+                if (!target.classList.contains('calendar-day') || target.classList.contains('padding')) {
+                    return;
+                }
+
+                const dateISO = target.dataset.date;
+                const selectedStudentId = studentFilterSelect.value;
+                
+                if (selectedStudentId === "" || !dateISO) return; // Não faz nada se "Todos" ou data inválida
+
+                const student = students.find(s => s.id === selectedStudentId);
+                if (!student) return;
+                
+                const isCurrentlySelected = target.classList.contains('selected');
+
+                // Remove qualquer agendamento existente para este dia/aluno (para evitar duplicatas)
+                schedules = schedules.filter(s => !(s.studentId === selectedStudentId && s.date === dateISO));
+
+                if (!isCurrentlySelected) {
+                    // Se não estava selecionado, ADICIONA
+                    const newSchedule = {
+                        id: generateId(),
+                        studentId: selectedStudentId,
+                        date: dateISO,
+                        price: student.price, // Usa o preço padrão do aluno
+                        status: 'completed' // Marcado significa aula dada
+                    };
+                    schedules.push(newSchedule);
+                    target.classList.add('selected'); // Atualiza a UI
+                } else {
+                    // Se estava selecionado, REMOVE (já foi filtrado acima)
+                    target.classList.remove('selected'); // Atualiza a UI
+                }
+                
+                saveSchedules();
+                calculateTotal();
+            };
+
+            // Calcula e exibe o total (lógica idêntica à versão anterior)
+            const calculateTotal = () => {
+                const selectedMonth = parseInt(monthSelect.value);
+                const selectedStudentId = studentFilterSelect.value; // Pode ser "" (Todos)
+                const selectedMonthName = MONTHS[selectedMonth];
+                const currentYear = new Date().getFullYear();
+                
+                let total = 0;
+
+                // Filtra todos os agendamentos do mês/ano
+                const schedulesForMonth = schedules.filter(s => {
+                    const scheduleDate = new Date(s.date + 'T00:00:00');
+                    return s.status === 'completed' &&
+                           scheduleDate.getMonth() === selectedMonth && 
+                           scheduleDate.getFullYear() === currentYear;
+                });
+
+                if (selectedStudentId === "") {
+                    // --- MODO TOTAL GERAL ---
+                    schedulesForMonth.forEach(schedule => {
+                        total += parseFloat(schedule.price);
+                    });
+                    
+                    totalLabel.textContent = `Total Geral em ${selectedMonthName}`;
+
+                } else {
+                    // --- MODO ALUNO INDIVIDUAL ---
+                    let studentName = "";
+                    const student = students.find(s => s.id === selectedStudentId);
+                    if (student) {
+                        studentName = student.name;
+                    }
+
+                    // Filtra os agendamentos do mês PELO ALUNO selecionado
+                    const schedulesForStudent = schedulesForMonth.filter(s => s.studentId === selectedStudentId);
+
+                    schedulesForStudent.forEach(schedule => {
+                        total += parseFloat(schedule.price);
+                    });
+                    
+                    if (studentName) {
+                        totalLabel.textContent = `Total de ${studentName} em ${selectedMonthName}`;
+                    } else {
+                        totalLabel.textContent = `Total a Receber`; // Fallback
+                    }
+                }
+                
+                totalAmountEl.textContent = formatCurrency(total);
+            };
+
+            // --- Inicialização ---
+            
+            const init = () => {
+                loadFromLocalStorage();
+                populateFilters(); // Popula o mês
+                renderStudentList();
+                renderStudentFilterDropdown(); // Popula o filtro de alunos
+                renderMonthCalendar(); // Renderiza o calendário
+
+                // Listeners dos Alunos
+                studentForm.addEventListener('submit', handleStudentFormSubmit);
+                studentList.addEventListener('click', handleStudentListClick);
+                cancelEditBtn.addEventListener('click', resetStudentForm);
+                
+                // Listeners dos Filtros e Calendário
+                monthSelect.addEventListener('change', renderMonthCalendar);
+                studentFilterSelect.addEventListener('change', renderMonthCalendar);
+                classDaysList.addEventListener('click', handleDayClick); // Atualizado de handleDayCheck
+            };
+
+            init();
+        });
+    </script>
+</body>
+</html>
+
