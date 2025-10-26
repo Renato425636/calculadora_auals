@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Aulas</title>
-    <!-- Usando a fonte Inter para uma aparência mais moderna -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Usando a fonte Inter para uma aparência mais moderna --><link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* NOVA PALETA DE CORES - Tons de verde-azulado, cinzas e toques suaves */
         :root {
-            --color-primary: #007bff;
-            --color-primary-dark: #0056b3;
-            --color-secondary: #6c757d;
-            --color-success: #28a745;
-            --color-danger: #dc3545;
-            --color-light: #f8f9fa;
-            --color-dark: #343a40;
-            --color-border: #dee2e6;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --color-primary: #38a798; /* Verde-azulado principal */
+            --color-primary-dark: #2c8276; /* Verde-azulado mais escuro */
+            --color-secondary: #607d8b; /* Cinza azulado para detalhes */
+            --color-success: #4caf50; /* Verde para sucesso */
+            --color-danger: #e57373; /* Vermelho suave para perigo/excluir */
+            --color-light: #f4f6f9; /* Fundo geral muito claro */
+            --color-dark: #37474f; /* Texto principal (quase preto) */
+            --color-border: #e0e0e0; /* Borda suave */
+            --color-accent-light: #e0f2f1; /* Verde-azulado claro para fundo secundário */
+            --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.08); /* Sombra mais leve */
+            --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.12); /* Sombra ao passar o mouse */
             --border-radius: 8px;
         }
 
@@ -37,7 +39,7 @@
             padding: 1.5rem;
             background-color: #ffffff;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-light); /* Sombra mais leve */
         }
 
         h1, h2, h3 {
@@ -63,7 +65,6 @@
             gap: 2rem;
         }
 
-        /* Layout responsivo para telas maiores */
         @media (min-width: 768px) {
             .grid-layout {
                 grid-template-columns: 300px 1fr;
@@ -75,10 +76,11 @@
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius);
             background-color: #fff;
+            box-shadow: var(--shadow-light); /* Adiciona sombra leve */
         }
 
         .schedule-section {
-            background-color: #fdfdfd;
+            background-color: var(--color-light); /* Fundo um pouco mais claro */
         }
 
         .form-group {
@@ -97,12 +99,18 @@
             padding: 0.75rem;
             border: 1px solid var(--color-border);
             border-radius: var(--border-radius);
-            box-sizing: border-box; /* Garante que o padding não afete a largura */
+            box-sizing: border-box;
             font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--color-primary-dark);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(56, 167, 152, 0.2); /* Sombra suave ao focar */
         }
 
         .form-group input[type="number"] {
-            /* Remove setas do input number */
             -moz-appearance: textfield;
         }
         .form-group input[type="number"]::-webkit-outer-spin-button,
@@ -134,6 +142,7 @@
         }
         .btn-primary:hover {
             background-color: var(--color-primary-dark);
+            box-shadow: var(--shadow-light);
         }
 
         .btn-secondary {
@@ -142,6 +151,7 @@
         }
         .btn-secondary:hover {
             background-color: #5a6268;
+            box-shadow: var(--shadow-light);
         }
 
         .btn-danger, .btn-edit {
@@ -149,6 +159,7 @@
             font-size: 0.8rem;
             margin-left: 0.5rem;
             flex-grow: 0;
+            border-radius: 4px; /* Botões menores, bordas um pouco menores */
         }
         
         .btn-danger {
@@ -158,7 +169,7 @@
         .btn-danger:hover { background-color: #c82333; }
 
         .btn-edit {
-            background-color: #ffc107;
+            background-color: #ffc107; /* Amarelo padrão para editar */
             color: var(--color-dark);
         }
         .btn-edit:hover { background-color: #e0a800; }
@@ -179,10 +190,9 @@
             border-bottom: none;
         }
         .student-item:hover {
-            background-color: var(--color-light);
+            background-color: var(--color-accent-light); /* Destaque suave */
         }
-        
-        /* Filtros */
+
         .filters {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -203,13 +213,14 @@
 
 
         #total-display {
-            background-color: #e6f7ff;
+            background-color: var(--color-accent-light); /* Fundo com a cor de destaque clara */
             border: 2px solid var(--color-primary);
             color: var(--color-primary-dark);
             padding: 1.5rem;
             border-radius: var(--border-radius);
             text-align: center;
             margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-light);
         }
         #total-display h3 {
             margin: 0;
@@ -222,7 +233,7 @@
             margin-top: 0.5rem;
         }
 
-        /* --- Novo Estilo do Calendário --- */
+        /* --- Estilo do Calendário --- */
         #class-days-list {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -240,7 +251,7 @@
         }
 
         .calendar-day {
-            aspect-ratio: 1 / 1; /* Mantém os dias quadrados */
+            aspect-ratio: 1 / 1;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -249,27 +260,31 @@
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s, color 0.2s;
+            background-color: #ffffff; /* Fundo dos dias normais */
+            transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
         }
 
         .calendar-day:hover:not(.padding) {
-            background-color: #e9ecef;
+            background-color: var(--color-accent-light);
+            box-shadow: var(--shadow-light); /* Sombra suave ao passar o mouse */
         }
 
         .calendar-day.padding {
-            background-color: var(--color-light);
+            background-color: var(--color-light); /* Usa o fundo geral para dias de preenchimento */
             cursor: default;
-            color: #ced4da;
+            color: #b0bec5; /* Cinza mais suave para dias de fora do mês */
+            border-color: transparent; /* Borda transparente para dias de fora do mês */
         }
         
         .calendar-day.weekend:not(.padding) {
-            color: var(--color-secondary);
+            color: var(--color-secondary); /* Mantém o cinza para fins de semana */
         }
 
         .calendar-day.selected {
             background-color: var(--color-primary);
             color: white;
             border-color: var(--color-primary-dark);
+            box-shadow: var(--shadow-light);
         }
         /* --- Fim do Estilo do Calendário --- */
 
@@ -277,7 +292,6 @@
             text-align: center;
             color: var(--color-secondary);
             padding: 1rem;
-            /* Novo: Ocupa a grade inteira do calendário */
             grid-column: 1 / -1; 
         }
 
@@ -290,8 +304,7 @@
 
         <div class="grid-layout">
             
-            <!-- Seção de Gerenciamento de Alunos -->
-            <div class="form-section">
+            <!-- Seção de Gerenciamento de Alunos --><div class="form-section">
                 <h2>Gerenciar Alunos</h2>
                 <form id="student-form">
                     <input type="hidden" id="student-id">
@@ -299,8 +312,7 @@
                         <label for="student-name">Nome do Aluno</label>
                         <input type="text" id="student-name" placeholder="Ex: João Silva" required>
                     </div>
-                    <!-- Correção: class.form-group" para "class="form-group" -->
-                    <div class="form-group"> 
+                    <!-- CORRIGIDO: class.form-group" para "class="form-group" --><div class="form-group"> 
                         <label for="student-default-price">Valor Padrão (R$)</label>
                         <input type="number" id="student-default-price" placeholder="Ex: 70.00" min="0" step="0.01" required>
                     </div>
@@ -311,12 +323,10 @@
                 </form>
 
                 <div id="student-list">
-                    <!-- Lista de alunos será populada pelo JS -->
-                </div>
+                    <!-- Lista de alunos será populada pelo JS --></div>
             </div>
 
-            <!-- Seção de Rastreamento de Aulas -->
-            <div class="schedule-section">
+            <!-- Seção de Rastreamento de Aulas --><div class="schedule-section">
                 <h2>Rastreamento de Aulas</h2>
 
                 <div class="filters">
@@ -328,8 +338,7 @@
                         <label for="student-filter-select">Aluno</label>
                         <select id="student-filter-select">
                             <option value="">Todos os Alunos</option>
-                            <!-- Populado pelo JS -->
-                        </select>
+                            <!-- Populado pelo JS --></select>
                     </div>
                 </div>
 
@@ -339,8 +348,7 @@
                 </div>
 
                 <div id="class-days-list">
-                    <!-- Calendário será populado pelo JS -->
-                    <p class="empty-state">Selecione um mês e um aluno para lançar as aulas.</p>
+                    <!-- Calendário será populado pelo JS --><p class="empty-state">Selecione um mês e um aluno para lançar as aulas.</p>
                 </div>
             </div>
 
@@ -366,7 +374,6 @@
 
             // --- Constantes e Estado ---
             const WEEKDAYS = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-            // Novo: Dias curtos para o cabeçalho do calendário
             const WEEKDAYS_SHORT = ["D", "S", "T", "Q", "Q", "S", "S"]; 
             const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             
@@ -533,7 +540,7 @@
                 studentFilterSelect.value = ""; // Padrão é "Todos os Alunos"
             };
             
-            // **FUNÇÃO PRINCIPAL ATUALIZADA**
+            // FUNÇÃO PRINCIPAL ATUALIZADA
             // Renderiza o calendário de dias do mês
             const renderMonthCalendar = () => {
                 classDaysList.innerHTML = ''; // Limpa
@@ -611,7 +618,7 @@
                 calculateTotal(); // Atualiza o total (individual) após renderizar
             };
             
-            // **FUNÇÃO ATUALIZADA**
+            // FUNÇÃO ATUALIZADA
             // Manipulador de clique nos dias do calendário
             const handleDayClick = (e) => {
                 const target = e.target;
